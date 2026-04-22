@@ -7,6 +7,7 @@ use App\Models\Lesson;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityLogger;
 
 class SubmissionController extends Controller
 {
@@ -47,7 +48,7 @@ class SubmissionController extends Controller
             $filePath = 'submissions/' . $name;
         }
 
-        Submission::create([
+        $submission = Submission::create([
             'lesson_id' => $lesson->id,
             'student_id' => Auth::id(),
             'text_answer' => $request->text_answer,
@@ -55,6 +56,12 @@ class SubmissionController extends Controller
             'status' => 'awaiting_review',
             'submitted_at' => now(),
         ]);
+
+        ActivityLogger::log(
+            'submission_sent',
+            'Студент отправил работу по уроку: ' . $lesson->title,
+            $course->id
+        );
         return redirect()
             ->route('student.submissions.status', $lesson->id)
             ->with('success', 'Работа успешно отправлена!');

@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityLogger;
 
 class ModuleController extends Controller
 {
@@ -22,11 +23,17 @@ class ModuleController extends Controller
         // Позиция модуля
         $position = $course->modules()->max('position') + 1;
 
-        Module::create([
+        $module = Module::create([
             'course_id' => $course->id,
             'title' => $request->title,
             'position' => $position,
         ]);
+
+        ActivityLogger::log(
+            'module_created',
+            'Преподаватель создал модуль: ' . $module->title,
+            $course->id
+        );
 
         return back()->with('success', 'Модуль добавлен.');
     }
@@ -47,6 +54,11 @@ class ModuleController extends Controller
         $module->update([
             'title' => $request->title,
         ]);
+        ActivityLogger::log(
+            'module_updated',
+            'Преподаватель обновил модуль: ' . $module->title,
+            $module->course_id
+        );
 
         return back()->with('success', 'Модуль обновлён.');
     }
@@ -78,6 +90,11 @@ class ModuleController extends Controller
             abort(403);
         }
 
+        ActivityLogger::log(
+            'module_deleted',
+            'Преподаватель удалил модуль: ' . $module->title,
+            $module->course_id
+        );
         $module->delete();
 
         return back()->with('success', 'Модуль удалён.');

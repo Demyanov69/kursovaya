@@ -76,12 +76,18 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('teacher.courses.index') }}">Курсы</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('teacher.submissions.all') }}">Проверить
                                     работы</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('teacher.activity_logs') }}">Журнал действий</a>
+                            </li>
                         @endif
 
                         @if(auth()->user()->isAdmin())
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Админ</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.courses.index') }}">Курсы</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Пользователи</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.activity_logs') }}">Журнал действий</a>
                             </li>
                         @endif
 

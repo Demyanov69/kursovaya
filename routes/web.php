@@ -14,6 +14,8 @@ use App\Http\Controllers\Teacher\SubmissionReviewController as TeacherSubmission
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
+use App\Http\Controllers\Teacher\ActivityLogController as TeacherActivityLogController;
 
 
 Route::get('/', function () {
@@ -120,4 +122,22 @@ Route::prefix('admin')
         Route::delete('/courses/{id}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
     });
 
-    
+Route::middleware(['auth'])->group(function () {
+
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])
+            ->name('admin.activity_logs');
+
+        Route::get('/activity-logs/export', [AdminActivityLogController::class, 'export'])
+            ->name('admin.activity_logs.export');
+    });
+
+    Route::middleware('role:teacher')->prefix('teacher')->group(function () {
+        Route::get('/activity-logs', [TeacherActivityLogController::class, 'index'])
+            ->name('teacher.activity_logs');
+
+        Route::get('/activity-logs/export', [TeacherActivityLogController::class, 'export'])
+            ->name('teacher.activity_logs.export');
+    });
+
+});

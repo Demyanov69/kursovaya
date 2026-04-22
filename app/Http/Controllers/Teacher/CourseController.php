@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityLogger;
 
 class CourseController extends Controller
 {
@@ -33,7 +34,7 @@ class CourseController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        Course::create([
+        $course = Course::create([
             'title' => $request->title,
             'description' => $request->description,
             'faculty' => $request->faculty,
@@ -42,6 +43,12 @@ class CourseController extends Controller
             'category_id' => $request->category_id,
             'author_id' => Auth::id(),
         ]);
+
+        ActivityLogger::log(
+            'course_created',
+            'Преподаватель создал курс: ' . $course->title,
+            $course->id
+        );
         return redirect()->route('teacher.courses.index')
             ->with('success', 'Курс создан.');
     }
@@ -66,12 +73,22 @@ class CourseController extends Controller
             'category_id' => 'nullable|exists:categories,id',
         ]);
         $course->update($request->only(['title', 'description', 'category_id']));
+        ActivityLogger::log(
+            'course_updated',
+            'Преподаватель обновил курс: ' . $course->title,
+            $course->id
+        );
         return redirect()->route('teacher.courses.index')
             ->with('success', 'Данные курса обновлены.');
     }
     public function destroy($id)
     {
         $course = Course::where('author_id', Auth::id())->findOrFail($id);
+        ActivityLogger::log(
+            'course_deleted',
+            'Преподаватель удалил курс: ' . $course->title,
+            $course->id
+        );
         $course->delete();
         return back()->with('success', 'Курс удалён.');
     }
@@ -83,6 +100,11 @@ class CourseController extends Controller
             'student_ids.*' => 'exists:users,id'
         ]);
         $course->students()->syncWithoutDetaching($request->student_ids);
+        ActivityLogger::log(
+            'students_added_to_course',
+            'Преподаватель добавил студентов на курс: ' . $course->title,
+            $course->id
+        );
         return back()->with('success', 'Студенты добавлены на курс');
     }
 
@@ -90,6 +112,11 @@ class CourseController extends Controller
     {
         $course = Course::where('author_id', Auth::id())->findOrFail($courseId);
         $course->students()->detach($studentId);
+        ActivityLogger::log(
+            'student_removed_from_course',
+            'Преподаватель удалил студента ID=' . $studentId . ' с курса: ' . $course->title,
+            $course->id
+        );
         return back()->with('success', 'Студент удален с курса');
     }
 }

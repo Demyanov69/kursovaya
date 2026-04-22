@@ -8,6 +8,7 @@ use App\Models\Grade;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityLogger;
 
 class SubmissionReviewController extends Controller
 {
@@ -53,13 +54,20 @@ class SubmissionReviewController extends Controller
             'score' => 'required|integer|min:1|max:100',
             'comment' => 'nullable|string',
         ]);
-        Grade::create([
+        $grade = Grade::create([
             'submission_id' => $submission->id,
             'grader_id' => Auth::id(),
             'score' => $request->score,
             'comment' => $request->comment,
         ]);
         $submission->update(['status' => 'graded']);
+        ActivityLogger::log(
+            'submission_checked',
+            'Преподаватель оценил работу студента ID=' . $submission->student_id .
+            ' по уроку: ' . $submission->lesson->title .
+            ' (оценка: ' . $grade->score . ')',
+            $submission->lesson->module->course_id
+        );
         return redirect()->route('teacher.submissions.all')
             ->with('success', 'Работа оценена.');
     }

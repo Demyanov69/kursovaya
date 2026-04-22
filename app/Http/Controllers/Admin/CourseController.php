@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\ActivityLogger;
 
 class CourseController extends Controller
 {
@@ -39,12 +40,25 @@ class CourseController extends Controller
             'direction',
             'course_year'
         ]));
+        ActivityLogger::log(
+            'course_updated_admin',
+            'Администратор обновил курс: ' . $course->title,
+            $course->id
+        );
         return redirect()->route('admin.courses.index')
             ->with('success', 'Курс обновлён.');
     }
     public function destroy($id)
     {
-        Course::findOrFail($id)->delete();
+        $course = Course::findOrFail($id);
+
+        ActivityLogger::log(
+            'course_deleted_admin',
+            'Администратор удалил курс: ' . $course->title,
+            $course->id
+        );
+
+        $course->delete();
 
         return back()->with('success', 'Курс удалён.');
     }

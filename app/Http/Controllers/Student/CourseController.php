@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityLogger;
 
 class CourseController extends Controller
 {
@@ -30,6 +31,12 @@ class CourseController extends Controller
 
         if (!$user->courses->contains($course->id)) {
             $user->courses()->attach($course->id);
+
+            ActivityLogger::log(
+                'course_enroll',
+                'Студент записался на курс: ' . $course->title,
+                $course->id
+            );
         }
 
         return redirect()->back()->with('success', 'Вы успешно записались на курс.');

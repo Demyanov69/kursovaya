@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Services\ActivityLogger;
 
 class LessonController extends Controller
 {
@@ -42,7 +43,13 @@ class LessonController extends Controller
         }
         $data['module_id'] = $module->id;
         $data['late_penalty_percent'] = $data['late_penalty_percent'] ?? 0;
-        Lesson::create($data);
+        $lesson = Lesson::create($data);
+
+        ActivityLogger::log(
+            'lesson_created',
+            'Преподаватель создал урок: ' . $lesson->title,
+            $module->course_id
+        );
         return redirect()
             ->route('teacher.courses.edit', $module->course_id)
             ->with('success', 'Урок создан.');
@@ -81,6 +88,11 @@ class LessonController extends Controller
 
         $data['late_penalty_percent'] = $data['late_penalty_percent'] ?? $lesson->late_penalty_percent;
         $lesson->update($data);
+        ActivityLogger::log(
+            'lesson_updated',
+            'Преподаватель обновил урок: ' . $lesson->title,
+            $lesson->module->course_id
+        );
         return redirect()
             ->route('teacher.courses.edit', $lesson->module->course_id)
             ->with('success', 'Урок обновлён.');
@@ -94,6 +106,11 @@ class LessonController extends Controller
         if ($lesson->assignment_file) {
             Storage::disk('public')->delete('assignments/' . $lesson->assignment_file);
         }
+        ActivityLogger::log(
+            'lesson_deleted',
+            'Преподаватель удалил урок: ' . $lesson->title,
+            $lesson->module->course_id
+        );
         $lesson->delete();
         return back()->with('success', 'Урок удалён.');
     }
