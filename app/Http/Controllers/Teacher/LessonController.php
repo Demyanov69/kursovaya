@@ -19,7 +19,11 @@ class LessonController extends Controller
         if ($module->course->author_id !== Auth::id()) {
             abort(403);
         }
-        return view('teacher.lesson_create', compact('module'));
+        $allLessons = Lesson::whereHas('module.course', function ($q) use ($module) {
+            $q->where('id', $module->course_id);
+        })->get();
+
+        return view('teacher.lesson_create', compact('module', 'allLessons'));
     }
     public function store(Request $request, $moduleId)
     {
@@ -34,6 +38,8 @@ class LessonController extends Controller
             'available_from' => 'nullable|date',
             'deadline' => 'nullable|date',
             'late_penalty_percent' => 'nullable|integer|min:0|max:100',
+            'required_lesson_id' => 'nullable|exists:lessons,id',
+            'required_min_score' => 'nullable|integer|min:1|max:100',
         ]);
         if ($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
@@ -60,7 +66,13 @@ class LessonController extends Controller
         if ($lesson->module->course->author_id !== Auth::id()) {
             abort(403);
         }
-        return view('teacher.lesson_create', compact('lesson'));
+        $courseId = $lesson->module->course_id;
+
+        $allLessons = Lesson::whereHas('module.course', function ($q) use ($courseId) {
+            $q->where('id', $courseId);
+        })->where('id', '!=', $lesson->id)->get();
+
+        return view('teacher.lesson_create', compact('lesson', 'allLessons'));
     }
     public function update(Request $request, $lessonId)
     {
@@ -75,6 +87,8 @@ class LessonController extends Controller
             'available_from' => 'nullable|date',
             'deadline' => 'nullable|date',
             'late_penalty_percent' => 'nullable|integer|min:0|max:100',
+            'required_lesson_id' => 'nullable|exists:lessons,id',
+            'required_min_score' => 'nullable|integer|min:1|max:100',
         ]);
         if ($request->hasFile('assignment_file')) {
             if ($lesson->assignment_file) {

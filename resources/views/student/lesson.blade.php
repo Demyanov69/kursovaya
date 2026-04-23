@@ -11,29 +11,44 @@
             ->first();
     @endphp
 
-    <h3 class="mb-3">{{ $lesson->title }}</h3>
+    @if(isset($accessAllowed) && !$accessAllowed)
+        <div class="alert alert-warning">
+            <h5>Материал заблокирован</h5>
+            <p>Чтобы получить доступ, выполните условия:</p>
 
-    <div class="card p-3 mb-4">
-        {!! nl2br(e($lesson->content)) !!}
-    </div>
-
-    @if($lesson->assignment_file)
-        <div class="alert alert-light border">
-            <strong>Домашнее задание:</strong><br>
-            <a href="{{asset('storage/' . $lesson->assignment_file) }}" class="btn btn-primary mt-2">
-                Скачать задание
-            </a>
+            <ul>
+                @foreach($conditions as $cond)
+                    <li>{{ $cond }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
+    @if(!isset($accessAllowed) || $accessAllowed)
+        <h3 class="mb-3">{{ $lesson->title }}</h3>
 
-    @if($submission)
-        <a href="{{ route('student.submissions.status', $lesson->id) }}" class="btn btn-success">
-            Просмотреть отправленную работу
-        </a>
-    @else
-        <a href="{{ route('student.submissions.create', $lesson->id) }}" class="btn btn-primary">
-            Отправить работу
-        </a>
+
+        <div class="card p-3 mb-4">
+            {!! nl2br(e($lesson->content)) !!}
+        </div>
+
+        @if($lesson->assignment_file)
+            <div class="alert alert-light border">
+                <strong>Домашнее задание:</strong><br>
+                <a href="{{asset('storage/' . $lesson->assignment_file) }}" class="btn btn-primary mt-2">
+                    Скачать задание
+                </a>
+            </div>
+        @endif
+
+        @if($submission)
+            <a href="{{ route('student.submissions.status', $lesson->id) }}" class="btn btn-success">
+                Просмотреть отправленную работу
+            </a>
+        @else
+            <a href="{{ route('student.submissions.create', $lesson->id) }}" class="btn btn-primary">
+                Отправить работу
+            </a>
+        @endif
     @endif
 
 @endsection
