@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Teacher\ActivityLogController as TeacherActivityLogController;
 use App\Http\Controllers\Student\SubmissionDraftController;
+use App\Http\Controllers\Teacher\LessonTemplateController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -149,5 +150,17 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->group(function (
 
     Route::get('/drafts/{lessonId}/load', [SubmissionDraftController::class, 'load'])
         ->name('student.drafts.load');
+
+});
+Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->group(function () {
+
+    Route::get('/lesson-templates', [LessonTemplateController::class, 'index'])
+        ->name('teacher.lesson_templates.index');
+
+    Route::post('/lesson-templates', [LessonTemplateController::class, 'store'])
+        ->name('teacher.lesson_templates.store');
+
+    Route::get('/lesson-templates/{id}', [LessonTemplateController::class, 'show'])
+        ->name('teacher.lesson_templates.show');
 
 });

@@ -33,7 +33,7 @@ class LessonController extends Controller
         }
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'nullable|string',
+            'blocks_json' => 'nullable|string',
             'assignment_file' => 'nullable|file|max:10240',
             'available_from' => 'nullable|date',
             'deadline' => 'nullable|date',
@@ -41,6 +41,7 @@ class LessonController extends Controller
             'required_lesson_id' => 'nullable|exists:lessons,id',
             'required_min_score' => 'nullable|integer|min:1|max:100',
         ]);
+        $data['content'] = $request->input('blocks_json');
         if ($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
             $name = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
@@ -82,7 +83,7 @@ class LessonController extends Controller
         }
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'nullable|string',
+            'blocks_json' => 'nullable|string',
             'assignment_file' => 'nullable|file|max:10240',
             'available_from' => 'nullable|date',
             'deadline' => 'nullable|date',
@@ -90,6 +91,7 @@ class LessonController extends Controller
             'required_lesson_id' => 'nullable|exists:lessons,id',
             'required_min_score' => 'nullable|integer|min:1|max:100',
         ]);
+        $data['content'] = $request->input('blocks_json');
         if ($request->hasFile('assignment_file')) {
             if ($lesson->assignment_file) {
                 Storage::disk('public')->delete($lesson->assignment_file);
