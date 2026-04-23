@@ -8,6 +8,7 @@ use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ActivityLogger;
+use App\Models\SubmissionDraft;
 
 class SubmissionController extends Controller
 {
@@ -56,6 +57,10 @@ class SubmissionController extends Controller
             'status' => 'awaiting_review',
             'submitted_at' => now(),
         ]);
+
+        SubmissionDraft::where('lesson_id', $lesson->id)
+            ->where('student_id', Auth::id())
+            ->delete();
 
         ActivityLogger::log(
             'submission_sent',

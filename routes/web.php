@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Teacher\ActivityLogController as TeacherActivityLogController;
-
+use App\Http\Controllers\Student\SubmissionDraftController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -139,5 +139,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/activity-logs/export', [TeacherActivityLogController::class, 'export'])
             ->name('teacher.activity_logs.export');
     });
+
+});
+
+Route::middleware(['auth', 'role:student'])->prefix('student')->group(function () {
+
+    Route::post('/drafts/{lessonId}/save', [SubmissionDraftController::class, 'save'])
+        ->name('student.drafts.save');
+
+    Route::get('/drafts/{lessonId}/load', [SubmissionDraftController::class, 'load'])
+        ->name('student.drafts.load');
 
 });
