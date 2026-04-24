@@ -36,11 +36,16 @@ class Course extends Model
         return $this->hasManyThrough(
             \App\Models\Lesson::class,
             \App\Models\Module::class,
-            'course_id', 
-            'module_id', 
-            'id',    
-            'id'   
+            'course_id',
+            'module_id',
+            'id',
+            'id'
         );
+    }
+
+    public function notificationSettings()
+    {
+        return $this->hasOne(\App\Models\CourseNotificationSetting::class);
     }
 
 

@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogControll
 use App\Http\Controllers\Teacher\ActivityLogController as TeacherActivityLogController;
 use App\Http\Controllers\Student\SubmissionDraftController;
 use App\Http\Controllers\Teacher\LessonTemplateController;
+use App\Http\Controllers\Teacher\CourseAnalyticsController;
+use App\Http\Controllers\Admin\AnalyticsController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -162,5 +164,25 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->group(function (
 
     Route::get('/lesson-templates/{id}', [LessonTemplateController::class, 'show'])
         ->name('teacher.lesson_templates.show');
+
+});
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('teacher')->group(function () {
+        Route::get('/courses/{courseId}/analytics', [CourseAnalyticsController::class, 'index'])
+            ->name('teacher.course.analytics');
+
+        Route::get('/courses/{courseId}/analytics/student/{studentId}', [CourseAnalyticsController::class, 'student'])
+            ->name('teacher.course.analytics.student');
+    });
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/analytics', [AnalyticsController::class, 'index'])
+            ->name('admin.analytics.index');
+
+        Route::get('/analytics/user/{userId}', [AnalyticsController::class, 'user'])
+            ->name('admin.analytics.user');
+    });
 
 });

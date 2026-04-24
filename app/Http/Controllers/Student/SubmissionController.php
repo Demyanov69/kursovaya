@@ -58,6 +58,12 @@ class SubmissionController extends Controller
             'submitted_at' => now(),
         ]);
 
+        \App\Services\StudentActivityLogger::log(
+            'submission_sent',
+            $course->id,
+            $lesson->id
+        );
+
         SubmissionDraft::where('lesson_id', $lesson->id)
             ->where('student_id', Auth::id())
             ->delete();
