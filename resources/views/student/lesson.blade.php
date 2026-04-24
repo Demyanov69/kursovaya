@@ -49,7 +49,7 @@
                     @endif
 
                     @if($block['type'] === 'paragraph')
-                        <p>{!! nl2br(e($block['value'])) !!}</p>
+                        <div>{!! $block['value'] !!}</div>
                     @endif
 
                     @if($block['type'] === 'image')

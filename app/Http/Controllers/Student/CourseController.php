@@ -31,6 +31,7 @@ class CourseController extends Controller
 
         if (!$user->courses->contains($course->id)) {
             $user->courses()->attach($course->id);
+            $user->notify(new \App\Notifications\CourseEnrolledNotification($course));
 
             ActivityLogger::log(
                 'course_enroll',

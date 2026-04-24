@@ -36,15 +36,15 @@
             <ul class="nav nav-tabs mb-3" id="lessonTabs" role="tablist">
 
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main"
-                        type="button" role="tab">
+                    <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button"
+                        role="tab">
                         Основное
                     </button>
                 </li>
 
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="builder-tab" data-bs-toggle="tab" data-bs-target="#builder"
-                        type="button" role="tab">
+                    <button class="nav-link" id="builder-tab" data-bs-toggle="tab" data-bs-target="#builder" type="button"
+                        role="tab">
                         Конструктор
                     </button>
                 </li>
@@ -122,15 +122,18 @@
                         </div>
 
                         <div class="d-flex gap-2 flex-wrap mb-3">
-                            <button type="button" class="btn btn-sm btn-success" onclick="openPreview()">Предпросмотр</button>
+                            <button type="button" class="btn btn-sm btn-success"
+                                onclick="openPreview()">Предпросмотр</button>
 
-                            <button type="button" class="btn btn-sm btn-warning" onclick="saveTemplate()">Сохранить как шаблон</button>
+                            <button type="button" class="btn btn-sm btn-warning" onclick="saveTemplate()">Сохранить как
+                                шаблон</button>
 
                             <select id="templateSelect" class="form-select form-select-sm" style="width: 250px;">
                                 <option value="">Импорт шаблона...</option>
                             </select>
 
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="importTemplate()">Импортировать</button>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                onclick="importTemplate()">Импортировать</button>
                         </div>
 
                         <div id="blocksContainer" class="border rounded p-3 bg-light">
@@ -173,8 +176,7 @@
 
                             @if(isset($allLessons))
                                 @foreach($allLessons as $l)
-                                    <option value="{{ $l->id }}"
-                                        {{ old('required_lesson_id', $lesson->required_lesson_id ?? '') == $l->id ? 'selected' : '' }}>
+                                    <option value="{{ $l->id }}" {{ old('required_lesson_id', $lesson->required_lesson_id ?? '') == $l->id ? 'selected' : '' }}>
                                         {{ $l->title }}
                                     </option>
                                 @endforeach
@@ -209,7 +211,8 @@
 
     {{-- SortableJS --}}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <script>
         let blocks = [];
 
@@ -221,9 +224,9 @@
             }
         @endif
 
-        function updateHiddenField() {
-            document.getElementById("blocksJson").value = JSON.stringify(blocks);
-        }
+            function updateHiddenField() {
+                document.getElementById("blocksJson").value = JSON.stringify(blocks);
+            }
 
         function renderBlocks() {
             const container = document.getElementById("blocksContainer");
@@ -240,49 +243,78 @@
 
                 if (block.type === "title") {
                     html = `<input type="text" class="form-control" placeholder="Заголовок"
-                        value="${block.value || ''}"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
+                                    value="${block.value || ''}"
+                                    oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
                 }
 
                 if (block.type === "paragraph") {
-                    html = `<textarea class="form-control" rows="3" placeholder="Текст"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">${block.value || ''}</textarea>`;
+                    html = `
+                <div id="editor_${index}" style="background:white;"></div>
+            `;
                 }
 
                 if (block.type === "image") {
                     html = `<input type="text" class="form-control" placeholder="URL изображения"
-                        value="${block.value || ''}"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
+                                    value="${block.value || ''}"
+                                    oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
                 }
 
                 if (block.type === "video") {
                     html = `<input type="text" class="form-control" placeholder="URL видео (YouTube)"
-                        value="${block.value || ''}"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
+                                    value="${block.value || ''}"
+                                    oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
                 }
 
                 if (block.type === "code") {
                     html = `<textarea class="form-control font-monospace" rows="4" placeholder="Код"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">${block.value || ''}</textarea>`;
+                                    oninput="blocks[${index}].value=this.value; updateHiddenField()">${block.value || ''}</textarea>`;
                 }
 
                 if (block.type === "file") {
                     html = `<input type="text" class="form-control" placeholder="Ссылка на файл"
-                        value="${block.value || ''}"
-                        oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
+                                    value="${block.value || ''}"
+                                    oninput="blocks[${index}].value=this.value; updateHiddenField()">`;
                 }
 
                 container.innerHTML += `
-                    <div class="card mb-2 block-item">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span style="cursor: grab;"><strong>${block.type.toUpperCase()}</strong></span>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removeBlock(${index})">Удалить</button>
-                        </div>
-                        <div class="card-body">${html}</div>
-                    </div>
-                `;
+                                <div class="card mb-2 block-item">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span style="cursor: grab;"><strong>${block.type.toUpperCase()}</strong></span>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeBlock(${index})">Удалить</button>
+                                    </div>
+                                    <div class="card-body">${html}</div>
+                                </div>
+                            `;
             });
+            blocks.forEach((block, index) => {
+                if (block.type === "paragraph") {
 
+                    const editor = document.querySelector("#editor_" + index);
+
+                    if (editor) {
+                        const quill = new Quill(editor, {
+                            theme: "snow",
+                            modules: {
+                                toolbar: [
+                                    ["bold", "italic", "underline", "strike"],
+                                    [{ "align": [] }],
+                                    [{ "header": [1, 2, 3, false] }],
+                                    [{ "list": "ordered" }, { "list": "bullet" }],
+                                    ["link"],
+                                    ["clean"]
+                                ]
+                            }
+                        });
+
+                        quill.root.innerHTML = block.value || "";
+
+                        quill.on("text-change", function () {
+                            blocks[index].value = quill.root.innerHTML;
+                            updateHiddenField();
+                        });
+                    }
+                }
+            });
             updateHiddenField();
         }
 
@@ -306,7 +338,7 @@
 
             blocks.forEach(block => {
                 if (block.type === "title") previewHtml += `<h2>${escapeHtml(block.value)}</h2>`;
-                if (block.type === "paragraph") previewHtml += `<p>${escapeHtml(block.value).replace(/\n/g, "<br>")}</p>`;
+                if (block.type === "paragraph") previewHtml += `<div>${block.value}</div>`;
                 if (block.type === "image") previewHtml += `<img src="${block.value}" style="max-width:100%; margin-bottom:15px;">`;
                 if (block.type === "video") previewHtml += `<p><a href="${block.value}" target="_blank">${block.value}</a></p>`;
                 if (block.type === "code") previewHtml += `<pre><code>${escapeHtml(block.value)}</code></pre>`;

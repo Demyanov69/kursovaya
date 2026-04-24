@@ -12,6 +12,14 @@
         @endisset
     </h3>
 
+    @isset($course)
+        <div class="mb-3 d-flex gap-2">
+            <a href="{{ route('teacher.course.analytics', $course->id) }}" class="btn btn-primary">
+                Аналитика
+            </a>
+        </div>
+    @endisset
+
     {{-- Блок основной информации о курсе --}}
     <div class="card p-3 mb-4">
         <h5 class="mb-3">Основная информация</h5>
@@ -60,7 +68,7 @@
     @isset($course)
         <div class="card p-3 mb-4">
             <h5 class="mb-3">Управление студентами</h5>
-            
+
             <div class="row">
                 <div class="col-md-6">
                     <h6>Студенты на курсе ({{ $course->students->count() }})</h6>
@@ -75,8 +83,9 @@
                                         <br>
                                         <small class="text-muted">{{ $student->email }}</small>
                                     </div>
-                                    <form method="POST" action="{{ route('teacher.courses.removeStudent', [$course->id, $student->id]) }}"
-                                          onsubmit="return confirm('Удалить студента с курса?')">
+                                    <form method="POST"
+                                        action="{{ route('teacher.courses.removeStudent', [$course->id, $student->id]) }}"
+                                        onsubmit="return confirm('Удалить студента с курса?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -88,7 +97,7 @@
                         </div>
                     @endif
                 </div>
-                
+
                 <div class="col-md-6">
                     <h6>Добавить студентов</h6>
                     <form method="POST" action="{{ route('teacher.courses.addStudents', $course->id) }}">

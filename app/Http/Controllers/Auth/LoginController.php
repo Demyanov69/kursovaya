@@ -37,6 +37,7 @@ class LoginController extends Controller
             'login',
             'Пользователь вошёл в систему: ' . $user->email
         );
+        \App\Services\StudentActivityLogger::log('login');
 
         // Перенаправляем по роли
         if ($user->isStudent()) {

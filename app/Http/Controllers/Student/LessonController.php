@@ -74,6 +74,11 @@ class LessonController extends Controller
                 $course->id
             );
         }
+        \App\Services\StudentActivityLogger::log(
+            'lesson_opened',
+            $course->id,
+            $lesson->id
+        );
 
         // Используем существующий шаблон lesson.blade.php
         return view('student.lesson', compact('lesson', 'accessAllowed', 'conditions'));

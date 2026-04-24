@@ -89,6 +89,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.activity_logs') }}">Журнал действий</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.analytics.index') }}">Аналитика</a>
+                            </li>
                         @endif
 
                     </ul>

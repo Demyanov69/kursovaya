@@ -61,6 +61,11 @@ class SubmissionReviewController extends Controller
             'comment' => $request->comment,
         ]);
         $submission->update(['status' => 'graded']);
+        $student = $submission->student;
+
+        if ($student) {
+            $student->notify(new \App\Notifications\GradeReceivedNotification($submission));
+        }
         ActivityLogger::log(
             'submission_checked',
             'Преподаватель оценил работу студента ID=' . $submission->student_id .
