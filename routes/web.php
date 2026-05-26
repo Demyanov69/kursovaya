@@ -20,6 +20,14 @@ use App\Http\Controllers\Student\SubmissionDraftController;
 use App\Http\Controllers\Teacher\LessonTemplateController;
 use App\Http\Controllers\Teacher\CourseAnalyticsController;
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\Admin\UserImportExportController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\Student\PortfolioItemController;
+use App\Http\Controllers\Student\GlossaryController as StudentGlossaryController;
+use App\Http\Controllers\Teacher\GlossaryController as TeacherGlossaryController;
+use App\Http\Controllers\Admin\GlossaryController as AdminGlossaryController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -31,6 +39,13 @@ Route::get('/password/reset', [ForgotPasswordController::class, 'showLinkRequest
     ->name('password.request');
 Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('password.email');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/change-password', [ChangePasswordController::class, 'show'])
+        ->name('password.change');
+
+    Route::post('/change-password', [ChangePasswordController::class, 'update'])
+        ->name('password.update');
+});
 
 //STUDENT
 Route::prefix('student')
@@ -57,6 +72,16 @@ Route::prefix('student')
         Route::post('/lessons/{id}/submit', [StudentSubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/submissions/{id}/status', [StudentSubmissionController::class, 'status'])
             ->name('submissions.status');
+        Route::get('/courses/{courseId}/glossary', [StudentGlossaryController::class, 'index'])
+            ->name('glossary.index');
+        Route::get('/glossary/{id}', [StudentGlossaryController::class, 'show'])
+            ->name('glossary.show');
+        Route::post('/glossary/{id}/rate', [StudentGlossaryController::class, 'rate'])->name('glossary.rate');
+        Route::post('/glossary/{id}/comment', [StudentGlossaryController::class, 'comment'])->name('glossary.comment');
+        Route::get(
+            '/glossary/term/{id}',
+            [StudentGlossaryController::class, 'show']
+        )->name('glossary.show');
     });
 
 //TEACHER
@@ -105,6 +130,46 @@ Route::prefix('teacher')
             ->name('submissions.show');
         Route::post('/submissions/{id}/grade', [TeacherSubmissionReviewController::class, 'grade'])
             ->name('submissions.grade');
+        // ПОРТФОЛИО СТУДЕНТОВ
+        Route::get('/portfolio', [\App\Http\Controllers\Teacher\TeacherPortfolioController::class, 'index'])
+            ->name('portfolio.index');
+        Route::get('/portfolio/course/{courseId}', [\App\Http\Controllers\Teacher\TeacherPortfolioController::class, 'course'])
+            ->name('portfolio.course');
+        Route::get(
+            '/courses/{courseId}/glossary',
+            [TeacherGlossaryController::class, 'index']
+        )
+            ->name('glossary.index');
+
+        Route::get(
+            '/courses/{courseId}/glossary/create',
+            [TeacherGlossaryController::class, 'create']
+        )
+            ->name('glossary.create');
+
+        Route::post(
+            '/courses/{courseId}/glossary',
+            [TeacherGlossaryController::class, 'store']
+        )
+            ->name('glossary.store');
+
+        Route::get(
+            '/glossary/{id}/edit',
+            [TeacherGlossaryController::class, 'edit']
+        )
+            ->name('glossary.edit');
+
+        Route::put(
+            '/glossary/{id}',
+            [TeacherGlossaryController::class, 'update']
+        )
+            ->name('glossary.update');
+
+        Route::delete(
+            '/glossary/{id}',
+            [TeacherGlossaryController::class, 'destroy']
+        )
+            ->name('glossary.destroy');
     });
 
 //ADMIN
@@ -123,6 +188,33 @@ Route::prefix('admin')
         Route::get('/courses/{id}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');
         Route::put('/courses/{id}', [AdminCourseController::class, 'update'])->name('courses.update');
         Route::delete('/courses/{id}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
+        Route::get('/users/import', function () {
+            return view('admin.users.import');
+        })->name('users.import');
+        Route::post('/users/import', [UserImportExportController::class, 'import'])
+            ->name('users.import.post');
+        Route::get('/users/export', [UserImportExportController::class, 'export'])
+            ->name('users.export');
+        Route::get('/glossary', [AdminGlossaryController::class, 'index'])
+            ->name('glossary.index');
+
+        Route::get('/glossary/create', [AdminGlossaryController::class, 'create'])
+            ->name('glossary.create');
+
+        Route::post('/glossary', [AdminGlossaryController::class, 'store'])
+            ->name('glossary.store');
+
+        Route::get('/glossary/{id}', [AdminGlossaryController::class, 'show'])
+            ->name('glossary.show');
+
+        Route::get('/glossary/{id}/edit', [AdminGlossaryController::class, 'edit'])
+            ->name('glossary.edit');
+
+        Route::put('/glossary/{id}', [AdminGlossaryController::class, 'update'])
+            ->name('glossary.update');
+
+        Route::delete('/glossary/{id}', [AdminGlossaryController::class, 'destroy'])
+            ->name('glossary.destroy');
     });
 
 Route::middleware(['auth'])->group(function () {
@@ -186,3 +278,50 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+// КАЛЕНДАРЬ
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/calendar', [CalendarController::class, 'index'])
+        ->name('calendar');
+
+    Route::get('/calendar/events', [CalendarController::class, 'events'])
+        ->name('calendar.events');
+
+    // 🔥 drag & drop обновление
+    Route::post('/calendar/update-date', [CalendarController::class, 'updateDate'])
+        ->name('calendar.update');
+});
+
+// PORTFOLIO
+Route::middleware(['auth', 'role:student'])
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
+
+        Route::get('/portfolio', [PortfolioController::class, 'index'])
+            ->name('portfolio.index');
+
+        Route::post('/portfolio/update', [PortfolioController::class, 'update'])
+            ->name('portfolio.update');
+
+        Route::post('/portfolio/items', [PortfolioItemController::class, 'store'])
+            ->name('portfolio.items.store');
+
+        Route::get('/portfolio/items/{id}/edit', [PortfolioItemController::class, 'edit'])
+            ->name('portfolio.items.edit');
+
+        Route::put('/portfolio/items/{id}', [PortfolioItemController::class, 'update'])
+            ->name('portfolio.items.update');
+
+        Route::delete('/portfolio/items/{id}', [PortfolioItemController::class, 'destroy'])
+            ->name('portfolio.items.delete');
+
+        // PDF EXPORT
+        Route::get('/portfolio/pdf', [PortfolioController::class, 'downloadPdf'])
+            ->name('portfolio.pdf');
+    });
+
+// Публичное портфолио
+Route::get('/portfolio/{slug}', [PortfolioController::class, 'show'])
+    ->name('portfolio.public');

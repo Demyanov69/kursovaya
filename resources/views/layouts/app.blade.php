@@ -69,6 +69,13 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('student.grades') }}">Оценки</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('calendar') }}">Календарь</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('student.portfolio.index') }}">Портфолио</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('password.change') }}">Сменить пароль</a>
+                            </li>
                         @endif
 
                         @if(auth()->user()->isTeacher())
@@ -77,7 +84,17 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('teacher.submissions.all') }}">Проверить
                                     работы</a></li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('teacher.activity_logs') }}">Журнал действий</a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('calendar') }}">Календарь</a>
+                            </li>
+                            <a class="nav-link" href="{{ route('teacher.activity_logs') }}">Журнал действий</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('teacher.portfolio.index') }}">
+                                    Портфолио студентов
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('password.change') }}">Сменить пароль</a>
                             </li>
                         @endif
 
@@ -87,10 +104,18 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('admin.users.index') }}">Пользователи</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ route('calendar') }}">Календарь</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.users.import') }}">Импорт/Экспорт</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.activity_logs') }}">Журнал действий</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.analytics.index') }}">Аналитика</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('password.change') }}">Сменить пароль</a>
                             </li>
                         @endif
 

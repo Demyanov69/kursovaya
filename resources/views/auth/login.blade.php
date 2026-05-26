@@ -29,6 +29,9 @@
                 </div>
 
                 <button class="btn btn-primary w-100">Войти</button>
+                <div class="text-center mt-2">
+                    <a href="{{ route('password.request') }}">Забыли пароль?</a>
+                </div>
             </form>
 
         </div>

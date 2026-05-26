@@ -64,6 +64,11 @@ class User extends Authenticatable implements MustVerifyEmail // implements Must
         return $this->role && $this->role->name === 'admin';
     }
 
+    public function portfolio()
+    {
+        return $this->hasOne(\App\Models\Portfolio::class);
+    }
+
     /**
      * The attributes that should be cast.
      *
