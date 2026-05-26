@@ -1,24 +1,49 @@
-## We are so dead
+# Платформа онлайн-обучения
 
-made with Laravel
+Веб-платформа для организации дистанционного обучения. Проект выполнен в рамках курсовой работы, КубГУ, факультет компьютерных технологий и прикладной математики, 2026.
 
-## About Laravel
+## Команда проекта
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Разработчик | Роль | Задачи |
+|-------------|------|--------|
+| Паскал Виктория Сергеевна | Fullstack-разработчик | Проектирование архитектуры, разработка интерфейса, структура БД, тестирование модулей |
+| Балашов Денис Владимирович | Fullstack-разработчик | Разработка архитектуры и интерфейса, проектирование БД, внедрение модулей |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Реализованные модули
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Часть Паскал В.С.
 
-## Learning Laravel
+- **Журнал действий** - автоматическое логирование событий с фильтрацией по пользователю, типу и дате, экспорт в CSV
+- **Черновики ответов** - автосохранение каждые 30 секунд, восстановление при повторном входе, удаление после отправки
+- **Условия открытия уроков** - настройка обязательного предыдущего урока и минимального балла, автооткрытие доступа
+- **Блочный конструктор уроков** - визуальный редактор с перетаскиванием блоков семи типов, предпросмотр и шаблоны
+- **Email-рассылки** - автоматические уведомления о записи на курс и выставлении оценки
+- **Аналитика активности** - графики и персональные карточки студентов для преподавателя, сводная аналитика для администратора
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Часть Балашов Д.В.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Смена и восстановление пароля** - восстановление доступа пользователей через email
+- **Кэширование данных** - кэширование часто используемых данных средствами Laravel Cache
+- **Глоссарий курса** - ведение глоссария с автоматическим выделением терминов в учебных материалах
+- **Календарь дедлайнов** - календарь событий и дедлайнов для студентов и преподавателей
+- **Портфолио студента** - портфолио достижений с экспортом в PDF
+- **Импорт и экспорт пользователей** - работа с пользователями через CSV
 
+## Стек технологий
+
+- **Backend:** PHP 8, Laravel
+- **Frontend:** Blade, Bootstrap, JavaScript
+- **Тестирование:** ручное функциональное, нагрузочное (k6)
+
+## База данных
+
+Спроектированы и добавлены новые таблицы:
+
+- `activity_logs`, `submission_drafts`, `lesson_templates`, `student_activities` (часть Паскал В.С.)
+- `glossaries`, `glossary_comments`, `glossary_ratings`, `portfolios`, `portfolio_items` (часть Балашов Д.В.)
+
+Расширена таблица `lessons` - добавлены поля условий открытия. Настроены связи между новыми и существующими сущностями платформы.
+
+## Выводы
+
+Реализованные модули делают систему более гибкой и удобной для работы со студентами, учебными материалами и пользовательскими данными. Модульная архитектура позволяет наращивать функционал без переработки существующего кода. Система готова к использованию в небольших образовательных проектах и дальнейшему развитию.
