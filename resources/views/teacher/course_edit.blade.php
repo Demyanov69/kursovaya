@@ -17,6 +17,10 @@
             <a href="{{ route('teacher.course.analytics', $course->id) }}" class="btn btn-primary">
                 Аналитика
             </a>
+
+            <a href="{{ route('teacher.glossary.index', $course->id) }}" class="btn btn-outline-primary">
+                📘 Глоссарий
+            </a>
         </div>
     @endisset
 

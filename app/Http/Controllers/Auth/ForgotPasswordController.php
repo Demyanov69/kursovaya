@@ -13,7 +13,7 @@ class ForgotPasswordController extends Controller
     // Форма восстановления пароля
     public function showLinkRequestForm()
     {
-        return view('auth.passwords.email');
+        return view('auth.forgot-password');
     }
 
     // Генерация токена и его сохранение

@@ -8,12 +8,18 @@ use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Cache;
 
 class CourseController extends Controller
 {
     public function index()
     {
-        $courses = Course::with(['category', 'author'])->withCount('lessons')->get();
+        $courses = Cache::remember('admin_courses', 120, function () {
+            return Course::with(['category', 'author'])
+                ->withCount('lessons')
+                ->get();
+        });
+
         return view('admin.courses', compact('courses'));
     }
     public function edit($id)
@@ -40,6 +46,9 @@ class CourseController extends Controller
             'direction',
             'course_year'
         ]));
+
+        Cache::forget('admin_courses');
+
         ActivityLogger::log(
             'course_updated_admin',
             'Администратор обновил курс: ' . $course->title,
@@ -60,6 +69,7 @@ class CourseController extends Controller
 
         $course->delete();
 
+        Cache::forget('admin_courses');
         return back()->with('success', 'Курс удалён.');
     }
 }

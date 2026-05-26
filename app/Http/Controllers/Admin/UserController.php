@@ -8,12 +8,24 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('role')->get();
+        $start = microtime(true);
+
+
+        $users = Cache::remember('admin_users', 120, function () {
+            Log::info('CACHE MISS: users loaded from DB');
+            return User::with('role')->get();
+        });
+
+        $time=microtime(true)-$start;
+        Log::info('LOAD TIME: ' .$time);
+
         return view('admin.users', compact('users'));
     }
     public function create()
@@ -39,6 +51,8 @@ class UserController extends Controller
             'direction' => $request->input('direction'),
             'course_year' => $request->input('course_year'),
         ]);
+
+        Cache::forget('admin_users');
 
         ActivityLogger::log(
             'user_created_admin',
@@ -70,6 +84,9 @@ class UserController extends Controller
             $data['password'] = Hash::make($request->input('password'));
         }
         $user->update($data);
+
+        Cache::forget('admin_users');
+
         ActivityLogger::log(
             'user_updated_admin',
             'Администратор обновил пользователя: ' . $user->name . ' (' . $user->email . ')'
@@ -88,6 +105,8 @@ class UserController extends Controller
         );
 
         $user->delete();
+
+        Cache::forget('admin_users');
 
         return back()->with('success', 'Пользователь удалён.');
     }

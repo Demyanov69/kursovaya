@@ -48,6 +48,11 @@ class Course extends Model
         return $this->hasOne(\App\Models\CourseNotificationSetting::class);
     }
 
+    public function glossaries()
+    {
+        return $this->hasMany(\App\Models\Glossary::class);
+    }
+
 
 
 }
